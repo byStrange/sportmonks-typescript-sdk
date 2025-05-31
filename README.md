@@ -397,6 +397,29 @@ The transfers endpoint requires semicolon separators for includes:
 const client = new SportMonksClient(API_KEY, { includeSeparator: ';' });
 ```
 
+## Interactive REPL
+
+The SDK includes an interactive REPL (Read-Eval-Print Loop) for testing and exploring the API:
+
+```bash
+# Start the REPL
+npm run repl
+
+# Advanced REPL with more features
+npm run repl:advanced
+```
+
+In the REPL, you can run queries directly:
+
+```javascript
+// No need to type 'client.' - just use the resources directly
+await teams.search('Liverpool').get();
+await fixtures.byDate('2024-01-15').include(['localteam', 'visitorteam']).get();
+await leagues.all().limit(5).get();
+```
+
+See [docs/REPL.md](docs/REPL.md) for full REPL documentation.
+
 ## Changelog
 
 See [CHANGELOG.md](CHANGELOG.md) for release history.

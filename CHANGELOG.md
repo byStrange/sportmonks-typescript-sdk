@@ -5,6 +5,44 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.2] - 2025-05-31
+
+### Added
+
+- Interactive REPL (Read-Eval-Print Loop) for testing and exploring the API
+  - Simple REPL with direct resource access (`npm run repl`)
+  - Advanced REPL with additional features (`npm run repl:advanced`)
+  - Helper functions: `pp()`, `data()`, `examples()`, `resources()`
+  - Command history persistence
+  - No need to type `client.` prefix - direct access to resources
+
+### Fixed
+
+- Fixed `fixtures` resource documentation (removed non-existent `live()` method)
+- Clarified that live matches are accessed via `livescores.inplay()`
+
+### Changed
+
+- Moved REPL tools from `scripts/` to `tools/` directory for better organization
+
+## [1.0.1] - 2025-05-31
+
+### Changed
+
+- Updated all dev dependencies to latest stable versions
+- Migrated from ESLint v8 to v9 with new flat config format
+- Updated husky to v9 simplified format
+- Fixed CI/CD workflow issues (updated upload-artifact to v4)
+
+### Fixed
+
+- Removed all deprecation warnings
+- Fixed unused variable ESLint errors
+
+### Removed
+
+- Deprecated `@types/dotenv` package (dotenv now includes its own types)
+
 ## [1.0.0] - 2025-05-31
 
 ### Added

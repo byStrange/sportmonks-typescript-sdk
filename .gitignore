@@ -58,10 +58,13 @@ temp/
 CLAUDE.md
 CLAUDE.local.md
 internal_docs/
-NPM_PUBLISH_CHECKLIST.md
 
-# Development scripts and examples
+# Development scripts and examples  
 scripts/
 examples/
 *example*.ts
 *Example*.ts
+!tools/
+
+# REPL history
+.sportmonks_repl_history
