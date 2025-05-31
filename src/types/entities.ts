@@ -459,9 +459,9 @@ export interface Lineup {
 }
 
 /**
- * Event entity
+ * Match Event entity (modern API version)
  */
-export interface Event {
+export interface MatchEvent {
   id: number;
   fixture_id: number;
   period_id: number;

@@ -68,3 +68,7 @@ examples/
 
 # REPL history
 .sportmonks_repl_history
+
+# Generated documentation
+api-docs/
+_site/

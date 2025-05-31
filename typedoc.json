@@ -1,0 +1,17 @@
+{
+  "entryPoints": ["./src/index.ts"],
+  "out": "api-docs",
+  "excludePrivate": true,
+  "excludeProtected": true,
+  "excludeInternal": true,
+  "readme": "./README.md",
+  "plugin": ["typedoc-plugin-markdown"],
+  "githubPages": false,
+  "hideGenerator": true,
+  "sort": ["source-order"],
+  "categorizeByGroup": true,
+  "navigationLinks": {
+    "GitHub": "https://github.com/rahulkeerthi/sportmonks-typescript-sdk",
+    "npm": "https://www.npmjs.com/package/@withqwerty/sportmonks-typescript-sdk"
+  }
+}
