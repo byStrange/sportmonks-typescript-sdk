@@ -47,7 +47,59 @@ jobs:
           
       - name: Prepare book content
         run: |
-          node scripts/prepare-book.js
+          mkdir -p book-src/getting-started book-src/core-concepts book-src/resources book-src/advanced book-src/tools book-src/appendix
+          
+          # Copy existing docs
+          cp docs/REPL.md book-src/tools/repl.md 2>/dev/null || echo "# Interactive REPL" > book-src/tools/repl.md
+          cp docs/TYPE_HELPERS.md book-src/advanced/type-helpers.md 2>/dev/null || echo "# Type Helpers" > book-src/advanced/type-helpers.md
+          cp CHANGELOG.md book-src/appendix/changelog.md
+          
+          # Create placeholder files if they don't exist
+          test -f book-src/getting-started/installation.md || cat > book-src/getting-started/installation.md << 'EOF'
+          # Installation
+
+          ```bash
+          npm install @withqwerty/sportmonks-typescript-sdk
+          ```
+
+          Or with yarn:
+          ```bash
+          yarn add @withqwerty/sportmonks-typescript-sdk
+          ```
+
+          ## Requirements
+          - Node.js 14.0 or higher
+          - TypeScript 4.0 or higher (if using TypeScript)
+
+          ## API Key
+          You'll need a SportMonks API key. Get one at [SportMonks](https://www.sportmonks.com)
+          EOF
+          
+          # Create other placeholder files
+          test -f book-src/getting-started/quick-start.md || echo "# Quick Start" > book-src/getting-started/quick-start.md
+          test -f book-src/getting-started/configuration.md || echo "# Configuration" > book-src/getting-started/configuration.md
+          test -f book-src/core-concepts/client-setup.md || echo "# Client Setup" > book-src/core-concepts/client-setup.md
+          test -f book-src/core-concepts/method-chaining.md || echo "# Method Chaining" > book-src/core-concepts/method-chaining.md
+          test -f book-src/core-concepts/include-separator.md || echo "# Include Separator" > book-src/core-concepts/include-separator.md
+          test -f book-src/core-concepts/error-handling.md || echo "# Error Handling" > book-src/core-concepts/error-handling.md
+          test -f book-src/core-concepts/rate-limiting.md || echo "# Rate Limiting" > book-src/core-concepts/rate-limiting.md
+          
+          # Create resource files
+          for resource in leagues teams players fixtures standings livescores transfers coaches referees venues; do
+            test -f book-src/resources/$resource.md || echo "# ${resource^} Resource" > book-src/resources/$resource.md
+          done
+          
+          # Create advanced files
+          test -f book-src/advanced/polling.md || echo "# Polling Utilities" > book-src/advanced/polling.md
+          test -f book-src/advanced/custom-includes.md || echo "# Custom Includes" > book-src/advanced/custom-includes.md
+          test -f book-src/advanced/validation.md || echo "# Validation" > book-src/advanced/validation.md
+          
+          # Create tools files
+          test -f book-src/tools/examples.md || echo "# Examples" > book-src/tools/examples.md
+          
+          # Create appendix files
+          test -f book-src/appendix/migration.md || echo "# Migration Guide" > book-src/appendix/migration.md
+          test -f book-src/appendix/contributing.md || echo "# Contributing" > book-src/appendix/contributing.md
           
       - name: Install mdBook
         run: |
