@@ -1,13 +1,14 @@
-name: Documentation
+name: Deploy Documentation
 
 on:
   push:
-    branches: [main]
+    branches: ["main"]
     paths:
       - 'src/**'
       - 'README.md'
       - 'package.json'
       - '.github/workflows/docs.yml'
+      - 'docs/**'
   workflow_dispatch:
 
 permissions:
@@ -20,50 +21,47 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build-docs:
-    name: Build Documentation
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
-
+        
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18.x'
+          node-version: '18'
           cache: 'npm'
-
+          
       - name: Install dependencies
         run: |
           npm ci
           npm install --save-dev typedoc typedoc-plugin-markdown
-
-      - name: Generate API documentation
-        run: npx typedoc
-
-      - name: Prepare documentation
+          
+      - name: Build documentation
         run: |
+          npx typedoc
           mkdir -p _site
-          cp -r api-docs/* _site/
-          cp -r docs _site/
+          cp -r api-docs/* _site/ 2>/dev/null || true
+          cp -r docs/* _site/ 2>/dev/null || true
           cp README.md _site/
-
-      - name: Upload documentation artifacts
+          echo "# SportMonks TypeScript SDK Documentation" > _site/index.md
+          echo "" >> _site/index.md
+          echo "- [API Reference](./modules.md)" >> _site/index.md
+          echo "- [REPL Guide](./REPL.md)" >> _site/index.md
+          echo "- [Type Helpers](./TYPE_HELPERS.md)" >> _site/index.md
+          
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+        
+      - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./_site
-
-  deploy-docs:
-    name: Deploy Documentation
-    needs: build-docs
-    runs-on: ubuntu-latest
-    permissions:
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
+          path: '_site'
+          
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v3
