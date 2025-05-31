@@ -72,3 +72,5 @@ examples/
 # Generated documentation
 api-docs/
 _site/
+book/
+book-src/api/
