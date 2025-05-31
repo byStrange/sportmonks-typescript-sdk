@@ -10,8 +10,7 @@ src = "book-src"
 build-dir = "book"
 
 [output.html]
-theme = "rust"
-default-theme = "rust"
+default-theme = "light"
 preferred-dark-theme = "navy"
 curly-quotes = true
 git-repository-url = "https://github.com/rahulkeerthi/sportmonks-typescript-sdk"
