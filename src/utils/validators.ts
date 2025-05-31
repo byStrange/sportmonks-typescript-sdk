@@ -103,7 +103,7 @@ export function validateIds(ids: (string | number)[], name: string = 'IDs'): num
   return ids.map((id, index) => {
     try {
       return validateId(id, `${name}[${index}]`);
-    } catch (error) {
+    } catch {
       throw new Error(`Invalid ${name}[${index}]: ${id}`);
     }
   });
@@ -173,7 +173,7 @@ export function sanitizeUrlParam(param: string): string {
 export function parseJsonSafely<T>(json: string): T {
   try {
     return JSON.parse(json);
-  } catch (error) {
+  } catch {
     throw new Error('Invalid JSON response from API');
   }
 }
