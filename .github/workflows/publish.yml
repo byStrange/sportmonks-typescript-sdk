@@ -1,0 +1,80 @@
+name: Publish to NPM
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      dry-run:
+        description: 'Run in dry-run mode (no actual publish)'
+        required: false
+        default: 'true'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
+
+jobs:
+  publish:
+    name: Publish Package
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build package
+        run: npm run build
+
+      - name: Check package
+        run: |
+          npm pack --dry-run
+          echo "Package contents:"
+          npm pack --dry-run 2>&1 | grep -E "npm notice"
+
+      - name: Configure npm for publishing
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+          npm whoami
+
+      - name: Publish to npm (dry run)
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.dry-run == 'true'
+        run: npm publish --dry-run
+
+      - name: Publish to npm
+        if: github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.event.inputs.dry-run == 'false')
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create GitHub release assets
+        if: github.event_name == 'release'
+        run: |
+          npm pack
+          mv *.tgz sportmonks-typescript-sdk-${{ github.event.release.tag_name }}.tgz
+
+      - name: Upload release assets
+        if: github.event_name == 'release'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./sportmonks-typescript-sdk-${{ github.event.release.tag_name }}.tgz
+          asset_name: sportmonks-typescript-sdk-${{ github.event.release.tag_name }}.tgz
+          asset_content_type: application/gzip

@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Questions & Discussions
+    url: https://github.com/rahulkeerthi/sportmonks-typescript-sdk/discussions
+    about: Please ask and answer questions in GitHub Discussions
+  - name: SportMonks API Documentation
+    url: https://docs.sportmonks.com/football
+    about: Check the official SportMonks API documentation
+  - name: SDK Documentation
+    url: https://github.com/rahulkeerthi/sportmonks-typescript-sdk#readme
+    about: Read the SDK documentation and examples

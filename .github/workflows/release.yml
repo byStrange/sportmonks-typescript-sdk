@@ -1,0 +1,75 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g., 1.0.0, 1.0.0-beta.1)'
+        required: true
+        type: string
+      prerelease:
+        description: 'Is this a pre-release?'
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  create-release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build package
+        run: npm run build
+
+      - name: Update package version
+        run: |
+          npm version ${{ github.event.inputs.version }} --no-git-tag-version
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add package.json package-lock.json
+          git commit -m "chore: release v${{ github.event.inputs.version }}"
+
+      - name: Create changelog
+        id: changelog
+        uses: TriPSs/conventional-changelog-action@v3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          version-file: './package.json'
+          version-path: 'version'
+          skip-version-file: 'true'
+          skip-commit: 'true'
+          skip-tag: 'true'
+
+      - name: Create GitHub Release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: v${{ github.event.inputs.version }}
+          name: v${{ github.event.inputs.version }}
+          body: ${{ steps.changelog.outputs.clean_changelog }}
+          draft: false
+          prerelease: ${{ github.event.inputs.prerelease }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push version commit
+        run: |
+          git push origin main
+          git push origin v${{ github.event.inputs.version }}
