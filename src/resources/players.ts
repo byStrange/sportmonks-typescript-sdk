@@ -1,6 +1,7 @@
 import { BaseResource } from '../core/base-resource';
 import { QueryBuilder } from '../core/query-builder';
 import { PaginatedResponse, SingleResponse, Player } from '../types';
+import { validateId, validateSearchQuery } from '../utils/validators';
 
 /**
  * Players resource for SportMonks Football API
@@ -21,7 +22,8 @@ export class PlayersResource extends BaseResource {
    * @returns QueryBuilder for chaining
    */
   byId(id: string | number): QueryBuilder<SingleResponse<Player>> {
-    return new QueryBuilder<SingleResponse<Player>>(this, `/${id}`);
+    const validatedId = validateId(id, 'ID');
+    return new QueryBuilder<SingleResponse<Player>>(this, `/${validatedId}`);
   }
 
   /**
@@ -30,7 +32,8 @@ export class PlayersResource extends BaseResource {
    * @returns QueryBuilder for chaining
    */
   byCountry(countryId: string | number): QueryBuilder<PaginatedResponse<Player>> {
-    return new QueryBuilder<PaginatedResponse<Player>>(this, `/countries/${countryId}`);
+    const validatedId = validateId(countryId, 'Country ID');
+    return new QueryBuilder<PaginatedResponse<Player>>(this, `/countries/${validatedId}`);
   }
 
   /**
@@ -39,7 +42,8 @@ export class PlayersResource extends BaseResource {
    * @returns QueryBuilder for chaining
    */
   search(searchQuery: string): QueryBuilder<PaginatedResponse<Player>> {
-    const encodedQuery = encodeURIComponent(searchQuery);
+    const validatedQuery = validateSearchQuery(searchQuery, 2);
+    const encodedQuery = encodeURIComponent(validatedQuery);
     return new QueryBuilder<PaginatedResponse<Player>>(this, `/search/${encodedQuery}`);
   }
 

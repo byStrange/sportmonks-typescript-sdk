@@ -38,7 +38,7 @@ describe('SportMonks Syntax Helpers in SDK', () => {
 
       expect(mockAxiosInstance.get).toHaveBeenCalledWith('/football/teams', {
         params: {
-          include: 'country:name,iso2,venue:name,city,capacity'
+          include: 'country:name,iso2;venue:name,city,capacity'
         }
       });
     });
@@ -58,7 +58,7 @@ describe('SportMonks Syntax Helpers in SDK', () => {
 
       expect(mockAxiosInstance.get).toHaveBeenCalledWith('/football/fixtures/123', {
         params: {
-          include: 'league,localteam:name,short_code,visitorteam:name,short_code,venue'
+          include: 'league;localteam:name,short_code;visitorteam:name,short_code;venue'
         }
       });
     });
@@ -84,7 +84,7 @@ describe('SportMonks Syntax Helpers in SDK', () => {
       expect(mockAxiosInstance.get).toHaveBeenCalledWith('/football/fixtures/date/2024-01-15', {
         params: {
           include:
-            'localteam:name,logo,visitorteam:name,logo,events:player_name,minute,type,lineups,venue:name,city'
+            'localteam:name,logo;visitorteam:name,logo;events:player_name,minute,type;lineups;venue:name,city'
         }
       });
     });
@@ -106,7 +106,7 @@ describe('SportMonks Syntax Helpers in SDK', () => {
 
       expect(mockAxiosInstance.get).toHaveBeenCalledWith('/football/players/123', {
         params: {
-          include: 'team,team.country:name,iso2,position,statistics:goals,assists,yellow_cards'
+          include: 'team;team.country:name,iso2;position;statistics:goals,assists,yellow_cards'
         }
       });
     });
@@ -237,7 +237,7 @@ describe('SportMonks Syntax Helpers in SDK', () => {
       expect(mockAxiosInstance.get).toHaveBeenCalledWith('/football/livescores/inplay', {
         params: {
           include:
-            'localteam:name,short_code,logo,visitorteam:name,short_code,logo,events:player_name,minute,type,result,league:name,league.country:name,iso2'
+            'localteam:name,short_code,logo;visitorteam:name,short_code,logo;events:player_name,minute,type,result;league:name;league.country:name,iso2'
         }
       });
     });
@@ -259,7 +259,7 @@ describe('SportMonks Syntax Helpers in SDK', () => {
       expect(mockAxiosInstance.get).toHaveBeenCalledWith('/football/teams/1', {
         params: {
           include:
-            'squad.player:display_name,position_id,jersey_number,squad.player.position:name,squad.player.country:name,iso2'
+            'squad.player:display_name,position_id,jersey_number;squad.player.position:name;squad.player.country:name,iso2'
         }
       });
     });

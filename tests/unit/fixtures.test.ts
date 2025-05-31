@@ -110,7 +110,7 @@ describe('FixturesResource', () => {
 
       expect(mockAxiosInstance.get).toHaveBeenCalledWith('/football/fixtures', {
         params: {
-          include: 'localteam,visitorteam,venue,referee'
+          include: 'localteam;visitorteam;venue;referee'
         }
       });
     });
@@ -132,7 +132,7 @@ describe('FixturesResource', () => {
 
       expect(mockAxiosInstance.get).toHaveBeenCalledWith('/football/fixtures/18535517', {
         params: {
-          include: 'localteam.country,visitorteam.country,localteam.venue,visitorteam.venue'
+          include: 'localteam.country;visitorteam.country;localteam.venue;visitorteam.venue'
         }
       });
     });
@@ -149,7 +149,7 @@ describe('FixturesResource', () => {
 
       expect(mockAxiosInstance.get).toHaveBeenCalledWith('/football/fixtures/18535517', {
         params: {
-          include: 'events,lineups,statistics,comments'
+          include: 'events;lineups;statistics;comments'
         }
       });
     });
@@ -166,7 +166,7 @@ describe('FixturesResource', () => {
 
       expect(mockAxiosInstance.get).toHaveBeenCalledWith('/football/fixtures/18535517', {
         params: {
-          include: 'events.type,events.player,events.relatedplayer'
+          include: 'events.type;events.player;events.relatedplayer'
         }
       });
     });
@@ -183,7 +183,7 @@ describe('FixturesResource', () => {
 
       expect(mockAxiosInstance.get).toHaveBeenCalledWith('/football/fixtures/18535517', {
         params: {
-          include: 'lineups.player,lineups.stats,bench.player,bench.stats'
+          include: 'lineups.player;lineups.stats;bench.player;bench.stats'
         }
       });
     });
@@ -200,7 +200,7 @@ describe('FixturesResource', () => {
 
       expect(mockAxiosInstance.get).toHaveBeenCalledWith('/football/fixtures/date/2024-01-15', {
         params: {
-          include: 'league,season,stage,round'
+          include: 'league;season;stage;round'
         }
       });
     });
@@ -214,7 +214,7 @@ describe('FixturesResource', () => {
 
       expect(mockAxiosInstance.get).toHaveBeenCalledWith('/football/fixtures/18535517', {
         params: {
-          include: 'odds,predictions,valuebet'
+          include: 'odds;predictions;valuebet'
         }
       });
     });
@@ -237,7 +237,7 @@ describe('FixturesResource', () => {
         '/football/fixtures/between/2024-01-01/2024-01-31',
         {
           params: {
-            include: 'localteam,visitorteam,league,venue',
+            include: 'localteam;visitorteam;league;venue',
             filters: 'status_id:5;league_id:8',
             page: 1,
             per_page: 50
@@ -258,7 +258,7 @@ describe('FixturesResource', () => {
 
       expect(mockAxiosInstance.get).toHaveBeenCalledWith('/football/fixtures/head-to-head/1/14', {
         params: {
-          include: 'localteam,visitorteam,scores,events'
+          include: 'localteam;visitorteam;scores;events'
         }
       });
     });

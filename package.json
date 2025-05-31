@@ -1,6 +1,6 @@
 {
   "name": "@withqwerty/sportmonks-typescript-sdk",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "TypeScript SDK for SportMonks Football API v3",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -8,10 +8,14 @@
     "dist",
     "tools",
     "docs",
+    "bin",
     "README.md",
     "LICENSE",
     "CHANGELOG.md"
   ],
+  "bin": {
+    "sportmonks-repl": "./bin/sportmonks-repl.js"
+  },
   "scripts": {
     "build": "tsc",
     "clean": "rm -rf dist coverage",

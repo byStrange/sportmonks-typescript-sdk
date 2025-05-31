@@ -4,7 +4,7 @@ A comprehensive, production-ready TypeScript SDK for the SportMonks Football API
 
 [![npm version](https://img.shields.io/npm/v/sportmonks-typescript-sdk.svg)](https://www.npmjs.com/package/sportmonks-typescript-sdk)
 [![CI](https://github.com/rahulkeerthi/sportmonks-typescript-sdk/actions/workflows/ci.yml/badge.svg)](https://github.com/rahulkeerthi/sportmonks-typescript-sdk/actions/workflows/ci.yml)
-[![Test Coverage](https://img.shields.io/badge/Coverage-97.6%25-brightgreen.svg)]()
+[![Test Coverage](https://img.shields.io/badge/Coverage-97.7%25-brightgreen.svg)]()
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)](https://www.typescriptlang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Dependabot](https://img.shields.io/badge/Dependabot-enabled-blue.svg)](https://github.com/rahulkeerthi/sportmonks-typescript-sdk/security/dependabot)
@@ -45,6 +45,29 @@ const fixtures = await client.fixtures
 // Get Premier League standings
 const standings = await client.standings.bySeason(19735).include(['participant']).get();
 ```
+
+### Interactive REPL
+
+Test and explore the API interactively with the built-in REPL:
+
+```bash
+# Set up your API key (one-time setup)
+export SPORTMONKS_API_KEY=your_api_key_here
+# OR create a .env file with: SPORTMONKS_API_KEY=your_api_key_here
+
+# Run the interactive REPL
+npx sportmonks-repl
+
+# Run with advanced features (type browsing, better formatting)
+npx sportmonks-repl --advanced
+
+# In the REPL, you can directly use resources without 'client.' prefix:
+sportmonks> await leagues.all().limit(5).get()
+sportmonks> await teams.search('Liverpool').get()
+sportmonks> await fixtures.byDate('2024-03-30').include(['participants', 'scores']).get()
+```
+
+See the [REPL documentation](docs/REPL.md) for more details and examples.
 
 ## Configuration
 
@@ -300,12 +323,38 @@ try {
 All responses are fully typed:
 
 ```typescript
-import type { Team, League, Fixture } from 'sportmonks-typescript-sdk';
+import type { Team, League, Fixture } from '@withqwerty/sportmonks-typescript-sdk';
 
 const fixture: Fixture = await client.fixtures.byId(18535517).get();
 const homeTeam: Team = fixture.localteam!;
 const league: League = fixture.league!;
 ```
+
+### Type Helpers
+
+The SDK includes type helper utilities for better type safety:
+
+```typescript
+import { hasInclude, TeamWithCountry, sortByName } from '@withqwerty/sportmonks-typescript-sdk';
+
+const team = await client.teams.byId(1).include(['country']).get();
+
+// Type-safe include checking
+if (hasInclude(team.data, 'country')) {
+  console.log(team.data.country.name); // ✅ TypeScript knows country exists
+}
+
+// Pre-defined types for common includes
+function processTeam(team: TeamWithCountry) {
+  console.log(`${team.name} from ${team.country.name}`);
+}
+
+// Type-safe sorting
+const teams = await client.teams.all().get();
+const sorted = teams.data.sort(sortByName);
+```
+
+See [Type Helpers Guide](docs/TYPE_HELPERS.md) for complete documentation.
 
 ## API Coverage
 

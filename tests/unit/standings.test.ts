@@ -130,7 +130,7 @@ describe('StandingsResource', () => {
 
       expect(mockAxiosInstance.get).toHaveBeenCalledWith('/football/standings/seasons/19735', {
         params: {
-          include: 'participant,league,season'
+          include: 'participant;league;season'
         }
       });
     });

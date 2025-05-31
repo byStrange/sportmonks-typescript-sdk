@@ -119,8 +119,12 @@ export function validateSearchQuery(query: string, minLength: number = 3): strin
 
   const trimmed = query.trim();
 
+  if (trimmed.length === 0) {
+    throw new Error('Invalid search query');
+  }
+
   if (trimmed.length < minLength) {
-    throw new Error(`Search query must be at least ${minLength} characters long`);
+    throw new Error(`Search query must be at least ${minLength} characters`);
   }
 
   return trimmed;
@@ -146,8 +150,8 @@ export function validatePagination(page?: number, perPage?: number): void {
 /**
  * Validate enum value
  */
-export function validateEnum<T extends Record<string, any>>(
-  value: any,
+export function validateEnum<T extends Record<string, unknown>>(
+  value: unknown,
   enumObject: T,
   name: string
 ): T[keyof T] {
@@ -157,7 +161,7 @@ export function validateEnum<T extends Record<string, any>>(
     throw new Error(`Invalid ${name}: ${value}. Must be one of: ${values.join(', ')}`);
   }
 
-  return value;
+  return value as T[keyof T];
 }
 
 /**

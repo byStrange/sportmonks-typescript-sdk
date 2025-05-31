@@ -40,7 +40,7 @@ export class SportMonksClient {
       baseUrl: 'https://api.sportmonks.com/v3',
       timeout: 30000,
       version: 'v3',
-      includeSeparator: ',',
+      includeSeparator: ';',
       ...options
     };
 

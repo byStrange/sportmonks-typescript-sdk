@@ -57,7 +57,7 @@ describe('LeaguesResource', () => {
 
       expect(mockAxiosInstance.get).toHaveBeenCalledWith('/football/leagues', {
         params: {
-          include: 'country,seasons',
+          include: 'country;seasons',
           select: 'id,name,active',
           filters: 'active:true;type:cup',
           order: '-name',
@@ -106,7 +106,7 @@ describe('LeaguesResource', () => {
 
       expect(mockAxiosInstance.get).toHaveBeenCalledWith('/football/leagues', {
         params: {
-          include: 'country,seasons,stages',
+          include: 'country;seasons;stages',
           select: 'id,name,active'
         }
       });

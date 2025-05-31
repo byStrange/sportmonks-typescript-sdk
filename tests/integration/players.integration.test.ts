@@ -67,13 +67,13 @@ describeIfApiKey('PlayersResource - Real API Integration', () => {
   }, 15000);
 
   test('should fetch players by country', async () => {
-    // Brazil (ID: 48)
-    const response = await client.players.byCountry(48).perPage(5).get();
+    // Denmark (ID: 320) - European country compatible with European Plan subscription
+    const response = await client.players.byCountry(320).perPage(5).get();
 
     expect(response.data).toBeDefined();
     expect(Array.isArray(response.data)).toBe(true);
 
-    console.log(`Found ${response.data.length} Brazilian players`);
+    console.log(`Found ${response.data.length} Danish players`);
 
     if (response.data.length > 0) {
       response.data.forEach(player => {
@@ -123,12 +123,12 @@ describeIfApiKey('PlayersResource - Real API Integration', () => {
 
   test('should test pagination parameters', async () => {
     const page1 = await client.players
-      .byCountry(462) // England
+      .byCountry(320) // Denmark
       .page(1)
       .perPage(5)
       .get();
 
-    const page2 = await client.players.byCountry(462).page(2).perPage(5).get();
+    const page2 = await client.players.byCountry(320).page(2).perPage(5).get();
 
     expect(page1.pagination).toBeDefined();
     expect(page2.pagination).toBeDefined();
@@ -146,11 +146,11 @@ describeIfApiKey('PlayersResource - Real API Integration', () => {
   test('should validate player IDs', () => {
     expect(() => {
       client.players.byId('invalid-id' as any);
-    }).toThrow('Invalid ID');
+    }).toThrow('Invalid ID: invalid-id. Must be a positive number');
 
     expect(() => {
       client.players.byId(-1);
-    }).toThrow('Invalid ID');
+    }).toThrow('Invalid ID: -1. Must be a positive number');
   });
 
   test('should validate search queries', () => {

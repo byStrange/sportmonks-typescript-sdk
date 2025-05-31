@@ -86,7 +86,7 @@ describe('TransfersResource', () => {
 
       expect(mockAxiosInstance.get).toHaveBeenCalledWith('/football/transfers', {
         params: {
-          include: 'player,fromteam,toteam',
+          include: 'player;fromteam;toteam',
           filters: 'completed:1',
           per_page: 50
         }
@@ -349,7 +349,7 @@ describe('TransfersResource', () => {
 
       expect(mockAxiosInstance.get).toHaveBeenCalledWith('/football/transfers/players/55555', {
         params: {
-          include: 'fromteam,toteam,type'
+          include: 'fromteam;toteam;type'
         }
       });
       expect(result.data[0].fromteam?.name).toBe('Team A');
@@ -376,7 +376,7 @@ describe('TransfersResource', () => {
 
       expect(mockAxiosInstance.get).toHaveBeenCalledWith('/football/transfers', {
         params: {
-          include: 'player,fromteam,toteam,type',
+          include: 'player;fromteam;toteam;type',
           filters: 'completed:1;type_id:218',
           page: 2,
           per_page: 100

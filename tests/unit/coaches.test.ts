@@ -116,7 +116,7 @@ describe('CoachesResource', () => {
 
       expect(mockAxiosInstance.get).toHaveBeenCalledWith('/football/coaches', {
         params: {
-          include: 'country,nationality,teams',
+          include: 'country;nationality;teams',
           order: 'name',
           per_page: 50
         }
@@ -215,7 +215,7 @@ describe('CoachesResource', () => {
 
       expect(mockAxiosInstance.get).toHaveBeenCalledWith('/football/coaches/123', {
         params: {
-          include: 'country,nationality'
+          include: 'country;nationality'
         }
       });
       expect(result.data.country).toBeDefined();

@@ -45,12 +45,44 @@ const client = new SportMonksClient(apiKey);
 // Store last result for easy access
 let lastResult: any = null;
 
+// List of protected resource names
+const protectedNames = [
+  'leagues', 'teams', 'players', 'fixtures', 'seasons', 
+  'squads', 'standings', 'transfers', 'venues', 'coaches', 
+  'referees', 'livescores', 'client', '_', 'pp', 'data', 
+  'type', 'browse', 'save', 'first', 'table', 'examples', 
+  'league', 'team', 'player', 'fixture'
+];
+
 // Create REPL server with custom eval
 const replServer = repl.start({
   prompt: `${colors.green}sportmonks> ${colors.reset}`,
   useColors: true,
   preview: false,
   breakEvalOnSigint: true,
+  eval: (cmd, context, filename, callback) => {
+    // Check if trying to assign to a protected resource name
+    const assignmentMatch = cmd.match(/^\s*(const|let|var)?\s*(\w+)\s*=/);
+    if (assignmentMatch) {
+      const varName = assignmentMatch[2];
+      if (protectedNames.includes(varName)) {
+        const error = new Error(
+          `\n${colors.red}${colors.bold}Protected name: '${varName}'${colors.reset}\n` +
+          `${colors.yellow}This is a built-in resource/function and cannot be overwritten.${colors.reset}\n\n` +
+          `${colors.green}Suggestions:${colors.reset}\n` +
+          `  • const ${varName}Data = await ${varName}...get()\n` +
+          `  • const ${varName}Result = await ${varName}...get()\n` +
+          `  • const my${varName.charAt(0).toUpperCase() + varName.slice(1)} = await ${varName}...get()\n`
+        );
+        callback(error);
+        return;
+      }
+    }
+    
+    // Use default eval for everything else
+    const defaultEval = (repl as any).defaultEval;
+    defaultEval(cmd, context, filename, callback);
+  },
   writer: (output: any) => {
     lastResult = output;
     return inspect(output, { 
@@ -84,6 +116,38 @@ replServer.context.livescores = client.livescores;
 // Helper functions
 replServer.context.pp = (obj: any, depth = 3) => {
   console.log(inspect(obj, { colors: true, depth, maxArrayLength: null }));
+};
+
+// Type information helper
+replServer.context.type = (obj: any, path?: string) => {
+  if (path) {
+    // Navigate to nested property
+    const parts = path.split('.');
+    let current = obj;
+    for (const part of parts) {
+      if (current && typeof current === 'object' && part in current) {
+        current = current[part];
+      } else {
+        console.log(`${colors.red}Property '${part}' not found${colors.reset}`);
+        return;
+      }
+    }
+    obj = current;
+  }
+
+  const typeInfo = getTypeInfo(obj);
+  console.log(`${colors.cyan}Type: ${colors.yellow}${typeInfo.type}${colors.reset}`);
+  
+  if (typeInfo.properties) {
+    console.log(`${colors.cyan}Properties:${colors.reset}`);
+    typeInfo.properties.forEach(prop => {
+      console.log(`  ${colors.green}${prop.name}${colors.reset}: ${colors.dim}${prop.type}${colors.reset}`);
+    });
+  }
+  
+  if (typeInfo.sample !== undefined) {
+    console.log(`${colors.cyan}Sample value:${colors.reset} ${typeInfo.sample}`);
+  }
 };
 
 replServer.context.data = (response: any) => {
@@ -180,6 +244,19 @@ ${colors.yellow}first(res)${colors.reset}      // Get first item from data array
 ${colors.yellow}table(array)${colors.reset}    // Display as table
 ${colors.yellow}save('name', value)${colors.reset}  // Save value to variable
 
+${colors.cyan}${colors.bold}Type Browsing:${colors.reset}
+
+${colors.yellow}type(obj)${colors.reset}       // Show type info for an object
+${colors.yellow}type(obj, 'path.to.property')${colors.reset}  // Show type of nested property
+${colors.yellow}browse(obj)${colors.reset}     // Interactive type browser with all properties
+
+${colors.yellow}// Example type browsing${colors.reset}
+const team = await teams.byId(1).include(['country', 'venue']).get()
+type(team)                    // Shows: SingleResponse
+type(team, 'data')            // Shows: Team
+type(team, 'data.name')       // Shows: string
+browse(team.data)             // Browse all Team properties
+
 ${colors.cyan}${colors.bold}Tips:${colors.reset}
 - Use ${colors.yellow}await${colors.reset} for all API calls
 - Press ${colors.yellow}Tab${colors.reset} for autocomplete
@@ -259,6 +336,139 @@ ${colors.dim}Type ${colors.cyan}.methods <resource>${colors.dim} to see resource
 ${colors.dim}Type ${colors.cyan}.help${colors.dim} to see all commands${colors.reset}
 ${colors.dim}Type ${colors.cyan}.exit${colors.dim} or press ${colors.cyan}Ctrl+D${colors.dim} to exit${colors.reset}
 `);
+
+// Type information helper
+function getTypeInfo(obj: any): { type: string; properties?: Array<{name: string, type: string}>; sample?: any } {
+  if (obj === null) return { type: 'null' };
+  if (obj === undefined) return { type: 'undefined' };
+  
+  const type = typeof obj;
+  
+  if (type === 'object') {
+    if (Array.isArray(obj)) {
+      const elementType = obj.length > 0 ? getTypeInfo(obj[0]).type : 'unknown';
+      return { 
+        type: `Array<${elementType}> (length: ${obj.length})`,
+        sample: obj.length > 0 ? obj[0] : undefined
+      };
+    }
+    
+    // Check for specific SportMonks types based on properties
+    const typeName = inferSportMonksType(obj);
+    
+    // Get properties
+    const properties = Object.keys(obj)
+      .filter(key => !key.startsWith('_'))
+      .slice(0, 20)
+      .map(key => ({
+        name: key,
+        type: getSimpleType(obj[key])
+      }));
+    
+    return { 
+      type: typeName || 'Object',
+      properties 
+    };
+  }
+  
+  return { type, sample: type === 'string' ? `"${obj}"` : obj };
+}
+
+function inferSportMonksType(obj: any): string | null {
+  // Check for response types
+  if ('data' in obj && 'pagination' in obj) return 'PaginatedResponse';
+  if ('data' in obj && 'rate_limit' in obj) return 'SingleResponse';
+  
+  // Check for entity types based on unique properties
+  if ('sport_id' in obj) {
+    if ('founded' in obj && 'venue_id' in obj) return 'Team';
+    if ('date_of_birth' in obj && 'position_id' in obj) return 'Player';
+    if ('starting_at' in obj && 'state_id' in obj) return 'Fixture';
+    if ('has_jerseys' in obj) return 'League';
+    if ('league_id' in obj && 'finished' in obj) return 'Season';
+    if ('capacity' in obj && 'surface' in obj) return 'Venue';
+    if ('nationality_id' in obj && !('position_id' in obj)) return 'Coach';
+    if ('common_name' in obj && !('date_of_birth' in obj)) return 'Referee';
+  }
+  
+  // Check for other types
+  if ('continent' in obj && 'sub_region' in obj) return 'Country';
+  if ('developer_name' in obj && 'model_type' in obj) return 'Type';
+  if ('player_id' in obj && 'jersey_number' in obj) return 'SquadPlayer';
+  
+  return null;
+}
+
+function getSimpleType(value: any): string {
+  if (value === null) return 'null';
+  if (value === undefined) return 'undefined';
+  
+  const type = typeof value;
+  
+  if (type === 'object') {
+    if (Array.isArray(value)) {
+      return `Array(${value.length})`;
+    }
+    const customType = inferSportMonksType(value);
+    return customType || 'Object';
+  }
+  
+  return type;
+}
+
+// Add a browse function for exploring types
+replServer.context.browse = (obj: any) => {
+  if (!obj || typeof obj !== 'object') {
+    console.log(`${colors.red}Can only browse objects${colors.reset}`);
+    return;
+  }
+  
+  const typeInfo = getTypeInfo(obj);
+  console.log(`\n${colors.bold}${colors.cyan}=== Type Browser ===${colors.reset}`);
+  console.log(`${colors.yellow}Type: ${typeInfo.type}${colors.reset}\n`);
+  
+  if (Array.isArray(obj)) {
+    console.log(`${colors.dim}Array with ${obj.length} items${colors.reset}`);
+    if (obj.length > 0) {
+      console.log(`${colors.dim}First item:${colors.reset}`);
+      replServer.context.browse(obj[0]);
+    }
+    return;
+  }
+  
+  // Group properties by type
+  const props = typeInfo.properties || [];
+  const grouped: Record<string, string[]> = {};
+  
+  props.forEach(prop => {
+    const type = prop.type;
+    if (!grouped[type]) grouped[type] = [];
+    grouped[type].push(prop.name);
+  });
+  
+  // Display grouped properties
+  Object.entries(grouped).forEach(([type, names]) => {
+    console.log(`${colors.cyan}${type}:${colors.reset}`);
+    names.forEach(name => {
+      const value = obj[name];
+      let preview = '';
+      
+      if (type === 'string' && value) {
+        preview = ` = "${value.substring(0, 30)}${value.length > 30 ? '...' : ''}"`;
+      } else if (type === 'number' || type === 'boolean') {
+        preview = ` = ${value}`;
+      } else if (type.startsWith('Array')) {
+        preview = ` (${value.length} items)`;
+      }
+      
+      console.log(`  ${colors.green}${name}${colors.reset}${colors.dim}${preview}${colors.reset}`);
+    });
+    console.log('');
+  });
+  
+  console.log(`${colors.dim}Use type(obj, 'property') to explore nested properties${colors.reset}`);
+  console.log(`${colors.dim}Use obj.property to access values${colors.reset}`);
+};
 
 // Handle exit
 replServer.on('exit', () => {

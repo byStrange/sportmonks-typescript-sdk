@@ -5,6 +5,46 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2024-12-01
+
+### Changed
+
+- **IMPORTANT**: Changed default include separator from comma (`,`) to semicolon (`;`) to match SportMonks API requirements for multiple includes
+- Updated all unit tests to use semicolon separator for multiple includes
+- Improved TypeScript types by replacing `any` with proper types in type helpers and validators
+
+### Added
+
+- Input validation for PlayersResource:
+  - ID validation in `byId()` and `byCountry()` methods
+  - Search query validation with minimum length check
+- Type helper utilities in `src/utils/type-helpers.ts`:
+  - `hasInclude()` - Type guard to check if an include exists
+  - `hasData()` - Type guard for responses with data
+  - `isPaginatedResponse()` - Type guard for paginated responses
+  - `isSingleResponse()` - Type guard for single responses
+  - `WithRequired<T, K>` - Type helper to make optional properties required
+  - Pre-defined types like `TeamWithCountry`, `FixtureWithTeams`, etc.
+- Documentation for type helpers (`docs/TYPE_HELPERS.md`)
+- ESLint configuration for test files (`tsconfig.eslint.json`)
+- Global REPL command accessible via `npx sportmonks-repl` when installed via npm
+
+### Fixed
+
+- Integration test failures:
+  - Updated players test to use Denmark (ID: 320) instead of Brazil for European Plan compatibility
+  - Updated fixtures pagination test to use dates with more fixtures (2025-03-30)
+  - Skipped latest fixtures test due to subscription limitations
+- ESLint configuration to properly lint test files
+- Prettier formatting in type helpers and test files
+- Test coverage improved to 97.7%
+
+### Developer Notes
+
+- The include separator change maintains backwards compatibility for single includes
+- Multiple includes now require semicolon separation (e.g., `include: 'country;venue'`)
+- Field selectors within includes still use commas (e.g., `include: 'team:name,short_code'`)
+
 ## [1.0.2] - 2025-05-31
 
 ### Added

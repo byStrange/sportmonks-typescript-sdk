@@ -196,20 +196,16 @@ describe('Validator Utilities', () => {
     });
 
     test('should reject too short queries', () => {
-      expect(() => validateSearchQuery('ab')).toThrow(
-        'Search query must be at least 3 characters long'
-      );
-      expect(() => validateSearchQuery('')).toThrow(
-        'Search query must be at least 3 characters long'
-      );
+      expect(() => validateSearchQuery('ab')).toThrow('Search query must be at least 3 characters');
+      expect(() => validateSearchQuery('')).toThrow('Invalid search query');
       expect(() => validateSearchQuery('  a  ')) // Trimmed = 'a'
-        .toThrow('Search query must be at least 3 characters long');
+        .toThrow('Search query must be at least 3 characters');
     });
 
     test('should use custom minimum length', () => {
       expect(validateSearchQuery('ab', 2)).toBe('ab');
       expect(() => validateSearchQuery('a', 2)).toThrow(
-        'Search query must be at least 2 characters long'
+        'Search query must be at least 2 characters'
       );
     });
   });

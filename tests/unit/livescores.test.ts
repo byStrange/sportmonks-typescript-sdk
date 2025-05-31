@@ -79,7 +79,7 @@ describe('LivescoresResource', () => {
       await client.livescores.inplay().include(['league', 'participants', 'scores', 'state']).get();
 
       expect(axiosInstance.get).toHaveBeenCalledWith('/football/livescores/inplay', {
-        params: { include: 'league,participants,scores,state' }
+        params: { include: 'league;participants;scores;state' }
       });
     });
   });
@@ -193,7 +193,7 @@ describe('LivescoresResource', () => {
       await client.livescores.latest().include(['events.type', 'scores', 'participants']).get();
 
       expect(axiosInstance.get).toHaveBeenCalledWith('/football/livescores/latest', {
-        params: { include: 'events.type,scores,participants' }
+        params: { include: 'events.type;scores;participants' }
       });
     });
   });

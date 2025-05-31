@@ -12,7 +12,7 @@ export default tseslint.config(
   
   // Global ignores
   {
-    ignores: ['dist/**', 'node_modules/**', '*.test.ts', 'sdk-examples.ts']
+    ignores: ['dist/**', 'node_modules/**', 'sdk-examples.ts', 'internal_docs/**']
   },
   
   // Configuration for all files
@@ -28,7 +28,7 @@ export default tseslint.config(
       },
       parser: tseslint.parser,
       parserOptions: {
-        project: './tsconfig.json'
+        project: './tsconfig.eslint.json'
       }
     },
     plugins: {

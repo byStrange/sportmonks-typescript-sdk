@@ -123,7 +123,7 @@ describe('PlayersResource', () => {
 
       expect(mockAxiosInstance.get).toHaveBeenCalledWith('/football/players', {
         params: {
-          include: 'country,position,detailedposition'
+          include: 'country;position;detailedposition'
         }
       });
     });
@@ -140,7 +140,7 @@ describe('PlayersResource', () => {
 
       expect(mockAxiosInstance.get).toHaveBeenCalledWith('/football/players/1', {
         params: {
-          include: 'country,position,detailedposition,statistics,transfers,trophies'
+          include: 'country;position;detailedposition;statistics;transfers;trophies'
         }
       });
     });
@@ -157,7 +157,7 @@ describe('PlayersResource', () => {
 
       expect(mockAxiosInstance.get).toHaveBeenCalledWith('/football/players/1', {
         params: {
-          include: 'transfers.team,transfers.type,statistics.details'
+          include: 'transfers.team;transfers.type;statistics.details'
         }
       });
     });
@@ -176,7 +176,7 @@ describe('PlayersResource', () => {
 
       expect(mockAxiosInstance.get).toHaveBeenCalledWith('/football/players/countries/32', {
         params: {
-          include: 'position,detailedposition',
+          include: 'position;detailedposition',
           page: 2,
           per_page: 50
         }
@@ -196,7 +196,7 @@ describe('PlayersResource', () => {
 
       expect(mockAxiosInstance.get).toHaveBeenCalledWith('/football/players', {
         params: {
-          include: 'country,position',
+          include: 'country;position',
           filters: 'position_id:4'
         }
       });

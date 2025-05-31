@@ -39,12 +39,41 @@ console.log('');
 // Create client instance
 const client = new SportMonksClient(apiKey);
 
-// Create REPL server
+// List of protected resource names
+const protectedNames = [
+  'leagues', 'teams', 'players', 'fixtures', 'seasons', 
+  'squads', 'standings', 'transfers', 'venues', 'coaches', 
+  'referees', 'livescores', 'client'
+];
+
+// Create REPL server with custom eval
 const replServer = repl.start({
   prompt: `${colors.green}sportmonks> ${colors.reset}`,
   useColors: true,
   preview: false,  // Disable preview to avoid completer issues
-  breakEvalOnSigint: true
+  breakEvalOnSigint: true,
+  eval: (cmd, context, filename, callback) => {
+    // Check if trying to assign to a protected resource name
+    const assignmentMatch = cmd.match(/^\s*(const|let|var)?\s*(\w+)\s*=/);
+    if (assignmentMatch) {
+      const varName = assignmentMatch[2];
+      if (protectedNames.includes(varName)) {
+        const error = new Error(
+          `${colors.red}Cannot use '${varName}' as a variable name!${colors.reset}\n` +
+          `${colors.yellow}'${varName}' is a SportMonks resource and cannot be overwritten.${colors.reset}\n` +
+          `${colors.green}Try using a different name like:${colors.reset}\n` +
+          `  const ${varName}Result = await ${varName}.search(...).get()\n` +
+          `  const my${varName.charAt(0).toUpperCase() + varName.slice(1)} = await ${varName}.all().get()`
+        );
+        callback(error);
+        return;
+      }
+    }
+    
+    // Use default eval for everything else
+    const defaultEval = (repl as any).defaultEval;
+    defaultEval(cmd, context, filename, callback);
+  }
 });
 
 // Add client to context
@@ -81,6 +110,47 @@ replServer.context.data = (response: any) => {
   }
 };
 
+// Simple type info helper
+replServer.context.type = (obj: any) => {
+  if (obj === null) {
+    console.log('Type: null');
+    return;
+  }
+  if (obj === undefined) {
+    console.log('Type: undefined');
+    return;
+  }
+  
+  const type = typeof obj;
+  
+  if (type === 'object') {
+    if (Array.isArray(obj)) {
+      console.log(`Type: Array (length: ${obj.length})`);
+      if (obj.length > 0) {
+        console.log(`  Element type: ${typeof obj[0]}`);
+      }
+    } else {
+      // Try to identify SportMonks types
+      let typeName = 'Object';
+      if ('data' in obj && 'pagination' in obj) typeName = 'PaginatedResponse';
+      else if ('data' in obj && 'rate_limit' in obj) typeName = 'Response';
+      else if ('name' in obj && 'sport_id' in obj) {
+        if ('founded' in obj) typeName = 'Team';
+        else if ('date_of_birth' in obj) typeName = 'Player';
+        else if ('has_jerseys' in obj) typeName = 'League';
+        else if ('starting_at' in obj) typeName = 'Fixture';
+      }
+      
+      console.log(`Type: ${typeName}`);
+      console.log(`Properties: ${Object.keys(obj).slice(0, 10).join(', ')}${Object.keys(obj).length > 10 ? '...' : ''}`);
+    }
+  } else {
+    console.log(`Type: ${type}`);
+    if (type === 'string') console.log(`Value: "${obj}"`);
+    else if (type === 'number' || type === 'boolean') console.log(`Value: ${obj}`);
+  }
+};
+
 // Add example queries
 replServer.context.examples = () => {
   console.log(`
@@ -111,12 +181,24 @@ await fixtures.byDate(today).include(['localteam', 'visitorteam']).get()
 ${colors.yellow}// Helper functions${colors.reset}
 pp(response)          // Pretty print full response
 data(response)        // Print just the data array
+type(obj)             // Show type information
 examples()            // Show these examples
 resources()           // List all available resources
+
+${colors.yellow}// Type checking${colors.reset}
+const team = await teams.byId(1).get()
+type(team)            // Shows: Response
+type(team.data)       // Shows: Team
+type(team.data.name)  // Shows: string
 
 ${colors.yellow}// Store results${colors.reset}
 const liverpool = await teams.search('Liverpool').get()
 const premierLeague = await leagues.search('Premier League').get()
+
+${colors.green}// Protected names${colors.reset}
+// Resource names are protected - you'll get a helpful error if you try to overwrite them
+const playerResults = await players.search('Salah').get()  ${colors.dim}// ✅ Good${colors.reset}
+// const players = ...  ${colors.dim}// ❌ This will show an error with suggestions${colors.reset}
 `);
 };
 

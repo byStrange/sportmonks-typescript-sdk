@@ -121,7 +121,7 @@ describe('TeamsResource', () => {
 
       expect(mockAxiosInstance.get).toHaveBeenCalledWith('/football/teams', {
         params: {
-          include: 'country,venue,squad'
+          include: 'country;venue;squad'
         }
       });
     });
@@ -138,7 +138,7 @@ describe('TeamsResource', () => {
 
       expect(mockAxiosInstance.get).toHaveBeenCalledWith('/football/teams/1', {
         params: {
-          include: 'country,venue,squad.player,latest,coach'
+          include: 'country;venue;squad.player;latest;coach'
         }
       });
     });
@@ -152,7 +152,7 @@ describe('TeamsResource', () => {
 
       expect(mockAxiosInstance.get).toHaveBeenCalledWith('/football/teams/seasons/19735', {
         params: {
-          include: 'country,venue',
+          include: 'country;venue',
           page: 2,
           per_page: 20
         }

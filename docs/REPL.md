@@ -1,6 +1,35 @@
 # SportMonks SDK REPL (Interactive Console)
 
-The SportMonks TypeScript SDK includes an interactive REPL (Read-Eval-Print Loop) for testing and exploring the API. The REPL tools are located in the `tools/` directory.
+The SportMonks TypeScript SDK includes an interactive REPL (Read-Eval-Print Loop) for testing and exploring the API.
+
+## Installation & Usage
+
+### When installed via npm
+
+After installing the SDK, you can use the REPL directly:
+
+```bash
+# Install the SDK
+npm install @withqwerty/sportmonks-typescript-sdk
+
+# Run the REPL
+npx sportmonks-repl
+
+# Run the advanced REPL
+npx sportmonks-repl --advanced
+```
+
+### When developing locally
+
+If you're working with the SDK source code:
+
+```bash
+# Simple REPL
+npm run repl
+
+# Advanced REPL
+npm run repl:advanced
+```
 
 ## Features
 
@@ -124,6 +153,28 @@ sportmonks > resources();
 - **coaches** - Coach/manager data
 - **referees** - Referee information
 - **livescores** - Live match data
+
+## Protected Resources
+
+The REPL automatically protects built-in resources and functions from being overwritten. If you try to use a protected name as a variable, you'll get a helpful error:
+
+```javascript
+// This will trigger a protective error:
+const players = await players.search('Salah').get();
+
+// Error message will suggest alternatives:
+// Cannot use 'players' as a variable name!
+// 'players' is a SportMonks resource and cannot be overwritten.
+// Try using a different name like:
+//   const playersResult = await players.search(...).get()
+//   const myPlayers = await players.all().get()
+```
+
+Protected names include:
+
+- All resources: `leagues`, `teams`, `players`, `fixtures`, etc.
+- Helper functions: `pp`, `data`, `type`, `browse`, `save`
+- System variables: `client`, `_`
 
 ## Tips and Tricks
 

@@ -114,7 +114,7 @@ describe('RefereesResource', () => {
 
       expect(mockAxiosInstance.get).toHaveBeenCalledWith('/football/referees', {
         params: {
-          include: 'country,fixtures'
+          include: 'country;fixtures'
         }
       });
     });

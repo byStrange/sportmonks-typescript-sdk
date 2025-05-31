@@ -141,7 +141,7 @@ describe('SportMonks Syntax Support', () => {
 
       class TestResource extends BaseResource {
         constructor() {
-          super(client as any, '/football/fixtures', ',');
+          super(client as any, '/football/fixtures', ';');
         }
       }
       const resource = new TestResource();
@@ -159,7 +159,7 @@ describe('SportMonks Syntax Support', () => {
 
       expect(mockGet).toHaveBeenCalledWith('/football/fixtures/date/2024-01-15', {
         params: {
-          include: 'lineups:player_name,events:player_name,minute,type',
+          include: 'lineups:player_name;events:player_name,minute,type',
           filters: 'eventTypes:14,15',
           per_page: 10
         }
