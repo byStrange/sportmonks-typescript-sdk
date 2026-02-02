@@ -1,5 +1,5 @@
 {
-  "name": "@withqwerty/sportmonks-typescript-sdk",
+  "name": "@bystrange/sportmonks-typescript-sdk",
   "version": "1.1.0",
   "description": "TypeScript SDK for SportMonks Football API v3",
   "main": "dist/index.js",

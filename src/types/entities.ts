@@ -235,13 +235,28 @@ export interface Standing {
   season?: Season;
   details?: StandingDetail[];
   // Home/Away splits (if included)
-  home?: StandingDetail;
-  away?: StandingDetail;
+  home?: StandingStatistics;
+  away?: StandingStatistics;
 }
 
 /**
  * Standing detail/statistics
  */
+
+export interface StandingStatistics {
+  id: number;
+  standing_id: number;
+  standing_type: string;
+  position: number;
+  points: number;
+  wins: number;
+  draws: number;
+  losses: number;
+  goals_for: number;
+  goals_against: number;
+  goal_difference: number;
+  games_played?: number;
+}
 
 interface StandingDetail {
   id: number;
