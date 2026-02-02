@@ -242,19 +242,22 @@ export interface Standing {
 /**
  * Standing detail/statistics
  */
-export interface StandingDetail {
+
+interface StandingDetail {
   id: number;
-  standing_id: number;
   standing_type: string;
-  position: number;
-  points: number;
-  wins: number;
-  draws: number;
-  losses: number;
-  goals_for: number;
-  goals_against: number;
-  goal_difference: number;
-  games_played?: number;
+  standing_id: number;
+  type_id: number;
+  value: number;
+  // Types comes from api and really can't be typed with typescript
+  type: {
+    id: number;
+    name: string;
+    code: string;
+    developer_name: string;
+    model_type: string;
+    stat_group: string;
+  };
 }
 
 /**
@@ -647,4 +650,49 @@ export interface Group {
   games_in_current_week: boolean;
   is_current: boolean;
   sort_order: number | null;
+}
+
+/**
+ * A "stage" of the competition (e.g., "Group Stage", "Knockout Stage") for Schedules.
+ */
+export interface ScheduleStage {
+  id: number;
+  sport_id: number;
+  league_id: number;
+  season_id: number;
+  type_id: number;
+  name: string;
+  sort_order: number;
+  finished: boolean;
+  is_current: boolean;
+  starting_at: string;
+  ending_at: string;
+  games_in_current_week: boolean;
+  tie_breaker_rule_id: number | null;
+  rounds: ScheduleRound[];
+}
+
+/**
+ * A round within a stage for Schedules.
+ */
+export interface ScheduleRound {
+  id: number;
+  sport_id: number;
+  league_id: number;
+  season_id: number;
+  stage_id: number;
+  name: string;
+  finished: boolean;
+  is_current: boolean;
+  starting_at: string;
+  ending_at: string;
+  games_in_current_week: boolean;
+  fixtures: Fixture[];
+}
+
+/**
+ * Response wrapper for Schedules by Season
+ */
+export interface SchedulesBySeasonResponse {
+  data: ScheduleStage[];
 }

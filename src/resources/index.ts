@@ -9,3 +9,4 @@ export { RefereesResource } from './referees';
 export { TransfersResource } from './transfers';
 export { VenuesResource } from './venues';
 export { FixturesResource } from './fixtures';
+export { SchedulesResource } from './schedules';

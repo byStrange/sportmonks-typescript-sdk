@@ -10,7 +10,8 @@ import {
   RefereesResource,
   TransfersResource,
   VenuesResource,
-  FixturesResource
+  FixturesResource,
+  SchedulesResource
 } from './resources';
 
 /**
@@ -31,6 +32,7 @@ export class SportMonksClient {
   public transfers: TransfersResource;
   public venues: VenuesResource;
   public fixtures: FixturesResource;
+  public schedules: SchedulesResource;
 
   /**
    * Create a new SportMonks API client
@@ -128,6 +130,12 @@ export class SportMonksClient {
     this.fixtures = new FixturesResource(
       this.client,
       '/football/fixtures',
+      this.options.includeSeparator!,
+      this.options.retry
+    );
+    this.schedules = new SchedulesResource(
+      this.client,
+      '/football/schedules',
       this.options.includeSeparator!,
       this.options.retry
     );
